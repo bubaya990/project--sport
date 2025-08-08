@@ -3,11 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\AboutusController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/aboutus', [AboutUsController::class, 'index'])->name('aboutus.index');
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -39,7 +42,7 @@ Route::resource('evenements/add', \App\Http\Controllers\EvenementController::cla
 
 
 
-/*  
+  
 // Socialite Routes
 Route::prefix('auth')->group(function () {
     Route::get('/google', [RegisteredUserController::class, 'redirectToGoogle'])->name('auth.google');
@@ -47,7 +50,7 @@ Route::prefix('auth')->group(function () {
     
     Route::get('/apple', [RegisteredUserController::class, 'redirectToApple'])->name('auth.apple');
     Route::get('/apple/callback', [RegisteredUserController::class, 'handleAppleCallback']);
-});*/
+});
 
 
 require __DIR__.'/auth.php';

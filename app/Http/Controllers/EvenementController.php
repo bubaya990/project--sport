@@ -4,16 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Evenement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class EvenementController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    
     public function index()
     {
-        $evenements = Evenement::orderBy('date', 'desc')->get();
+        $evenements = Evenement::orderBy('date', 'desc')->paginate(10);
         return view('evenements.list', compact('evenements'));
     }
 
@@ -48,7 +48,7 @@ class EvenementController extends Controller
             }
         }
 
-        $evenement = Evenement::create([
+        Evenement::create([
             'titre' => $validated['titre'],
             'description' => $validated['description'],
             'date' => $validated['date'],
@@ -57,7 +57,7 @@ class EvenementController extends Controller
             'images' => !empty($images) ? $images : null
         ]);
 
-        return redirect()->route('evenements.index')->with('success', 'Événement créé avec succès!');
+        return redirect()->route('evenements.index')->with('success', 'Event created successfully!');
     }
 
     /**
@@ -81,12 +81,21 @@ class EvenementController extends Controller
             'status' => 'required|in:scheduled,ongoing,completed',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'removed_images' => 'nullable|array'
+            'removed_images' => 'nullable|array',
+            'existing_images' => 'nullable'
         ]);
 
+        // Start with existing images or empty array
+        $images = $request->has('existing_images') 
+            ? json_decode($request->input('existing_images'), true) 
+            : [];
+
         // Handle image removal
-        $images = $evenement->images ?? [];
         if ($request->has('removed_images')) {
+            foreach ($request->input('removed_images') as $removedImage) {
+                // Delete the file from storage
+                Storage::disk('public')->delete($removedImage);
+            }
             $images = array_diff($images, $request->input('removed_images'));
         }
 
@@ -98,16 +107,22 @@ class EvenementController extends Controller
             }
         }
 
-        $evenement->update([
+        $updateData = [
             'titre' => $validated['titre'],
             'description' => $validated['description'],
             'date' => $validated['date'],
             'end_date' => $validated['end_date'],
             'status' => $validated['status'],
-            'images' => !empty($images) ? $images : null
-        ]);
+        ];
 
-        return redirect()->route('evenements.index')->with('success', 'Événement mis à jour avec succès!');
+        // Only update images if we have some or explicitly want to remove all
+        if (!empty($images) || $request->has('removed_images')) {
+            $updateData['images'] = !empty($images) ? $images : null;
+        }
+
+        $evenement->update($updateData);
+
+        return redirect()->route('evenements.index')->with('success', 'Event updated successfully!');
     }
 
     /**
@@ -115,11 +130,22 @@ class EvenementController extends Controller
      */
     public function destroy(Evenement $evenement)
     {
+        // Delete associated images
+        if ($evenement->images) {
+            foreach ($evenement->images as $image) {
+                Storage::disk('public')->delete($image);
+            }
+        }
+        
         $evenement->delete();
-        return redirect()->route('evenements.index')->with('success', 'Événement supprimé avec succès!');
+        return redirect()->route('evenements.index')->with('success', 'Event deleted successfully!');
     }
+
+    /**
+     * Display the specified resource.
+     */
     public function show(Evenement $evenement)
-{
-    return view('evenements.show', compact('evenement'));
-}
+    {
+        return view('evenements.show', compact('evenement'));
+    }
 }

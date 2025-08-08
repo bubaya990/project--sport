@@ -32,19 +32,19 @@
                                     <span class="detail-item">📍 {{ $event->lieu }}</span>
                                     @endif
                                 </div>
-                              <div class="hero-actions">
-    <a href="#" class="btn btn-primary">Learn More</a>
-    @if(auth()->user()->is_admin)
-    <div class="admin-actions">
-        <a href="{{ route('evenements.edit', $event->id) }}" class="btn-icon">✏️</a>
-        <form action="{{ route('evenements.destroy', $event->id) }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn-icon">🗑️</button>
-        </form>
-    </div>
-    @endif
-</div>
+                                <div class="hero-actions">
+                    <a href="{{ route('evenements.show', $event->id) }}" class="btn btn-outline">see detales</a>
+                                    @if(auth()->user()->is_admin)
+                                    <div class="admin-actions">
+                                        <a href="{{ route('evenements.edit', $event->id) }}" class="btn-icon">✏️</a>
+                                        <form action="{{ route('evenements.destroy', $event->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-icon">🗑️</button>
+                                        </form>
+                                    </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                     <div class="event-date">{{ $event->date->format('M d, Y') }}</div>
                     <h3 class="event-title">{{ $event->titre }}</h3>
                     <p class="event-description">{{ Str::limit($event->description, 100) }}</p>
-                    <a href="{{ route('evenements.show', $event->id) }}" class="btn btn-outline">View Photos</a>
+                    <a href="{{ route('evenements.show', $event->id) }}" class="btn btn-outline">see events</a>
                 </div>
             </div>
             @empty
@@ -102,7 +102,7 @@
     </div>
 
     <!-- Contact & Support Section -->
-    <div class="section-card">
+    <div class="section-card contact-section">
         <div class="section-header">
             <div class="section-icon">📞</div>
             <h2 class="section-title">Contact & Support</h2>
@@ -152,9 +152,23 @@
 </div>
 
 <style>
+    /* Base container */
+    #dashboardContent {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
     /* Hero Section Styles */
     .hero-section {
         margin: 0 -20px;
+        margin-top: -20px;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
     }
     
     .events-swiper {
@@ -165,8 +179,9 @@
     
     .swiper-container {
         width: 100%;
-        height: 80vh;
-        min-height: 500px;
+        height: 400vh;
+        min-height: 350px;
+        max-height: 500px;
     }
     
     .hero-event-card {
@@ -180,6 +195,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .swiper-slide-active .hero-bg-image {
+        transform: scale(1.03);
     }
     
     .hero-bg-image.placeholder {
@@ -194,12 +214,28 @@
         padding: 40px;
         background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
         color: white;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.5s ease 0.3s;
+    }
+    
+    .swiper-slide-active .hero-content-overlay {
+        transform: translateY(0);
+        opacity: 1;
     }
     
     .event-meta {
         display: flex;
         gap: 16px;
         margin-bottom: 12px;
+        transform: translateY(10px);
+        transition: all 0.5s ease 0.4s;
+        opacity: 0;
+    }
+    
+    .swiper-slide-active .event-meta {
+        transform: translateY(0);
+        opacity: 1;
     }
     
     .event-date {
@@ -234,6 +270,14 @@
         font-size: 36px;
         font-weight: 700;
         line-height: 1.2;
+        transform: translateY(10px);
+        transition: all 0.5s ease 0.5s;
+        opacity: 0;
+    }
+    
+    .swiper-slide-active .hero-title {
+        transform: translateY(0);
+        opacity: 1;
     }
     
     .hero-description {
@@ -241,12 +285,28 @@
         font-size: 16px;
         max-width: 700px;
         line-height: 1.5;
+        transform: translateY(10px);
+        transition: all 0.5s ease 0.6s;
+        opacity: 0;
+    }
+    
+    .swiper-slide-active .hero-description {
+        transform: translateY(0);
+        opacity: 1;
     }
     
     .event-details {
         display: flex;
         gap: 24px;
         margin-bottom: 24px;
+        transform: translateY(10px);
+        transition: all 0.5s ease 0.7s;
+        opacity: 0;
+    }
+    
+    .swiper-slide-active .event-details {
+        transform: translateY(0);
+        opacity: 1;
     }
     
     .detail-item {
@@ -259,6 +319,14 @@
     .hero-actions {
         display: flex;
         gap: 16px;
+        transform: translateY(10px);
+        transition: all 0.5s ease 0.8s;
+        opacity: 0;
+    }
+    
+    .swiper-slide-active .hero-actions {
+        transform: translateY(0);
+        opacity: 1;
     }
     
     .admin-actions {
@@ -271,23 +339,47 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 20px;
+        width: 100%;
     }
     
     .past-event-card {
         border-radius: 12px;
         overflow: hidden;
         background: var(--secondary);
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
     
     .past-event-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
+    
+    .past-event-card:nth-child(1) { animation-delay: 0.1s; }
+    .past-event-card:nth-child(2) { animation-delay: 0.2s; }
+    .past-event-card:nth-child(3) { animation-delay: 0.3s; }
+    .past-event-card:nth-child(4) { animation-delay: 0.4s; }
+    .past-event-card:nth-child(5) { animation-delay: 0.5s; }
+    .past-event-card:nth-child(6) { animation-delay: 0.6s; }
     
     .past-event-image {
         width: 100%;
         height: 180px;
         object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .past-event-card:hover .past-event-image {
+        transform: scale(1.05);
     }
     
     .past-event-image.placeholder {
@@ -299,14 +391,27 @@
     }
     
     /* Contact Section */
+    .contact-section {
+        animation: fadeIn 0.5s ease 0.3s forwards;
+        opacity: 0;
+    }
+    
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+    
     .contact-container {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        width: 100%;
     }
     
     .contact-info {
         display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 20px;
     }
     
@@ -314,17 +419,26 @@
         display: flex;
         align-items: center;
         gap: 15px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
     }
     
     .contact-icon {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         background: var(--primary-light);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 18px;
         color: var(--primary);
     }
     
@@ -340,15 +454,20 @@
     }
     
     .social-link {
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 16px;
         color: white;
         text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .social-link:hover {
+        transform: translateY(-3px) scale(1.1);
     }
     
     .facebook { background: #1877f2; }
@@ -386,12 +505,18 @@
             font-size: 28px;
         }
         
-        .contact-container {
+        .swiper-container {
+            height: 50vh;
+            min-height: 300px;
+        }
+        
+        .contact-info {
             grid-template-columns: 1fr;
         }
         
-        .swiper-container {
-            height: 70vh;
+        .hero-section {
+            margin: 0 -15px;
+            margin-top: -15px;
         }
     }
 </style>
@@ -401,18 +526,19 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Swiper
+        // Initialize Swiper with more effects
         const swiper = new Swiper('.swiper-container', {
             slidesPerView: 1,
             spaceBetween: 0,
             loop: true,
             autoplay: {
-                delay: 5000,
+                delay: 7000,
                 disableOnInteraction: false,
             },
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
+                dynamicBullets: true,
             },
             navigation: {
                 nextEl: '.swiper-button-next',
@@ -421,7 +547,48 @@
             effect: 'fade',
             fadeEffect: {
                 crossFade: true
+            },
+            speed: 1000,
+            parallax: true,
+            on: {
+                init: function() {
+                    const activeSlide = this.slides[this.activeIndex];
+                    const overlay = activeSlide.querySelector('.hero-content-overlay');
+                    if (overlay) {
+                        overlay.style.opacity = '1';
+                        overlay.style.transform = 'translateY(0)';
+                    }
+                },
+                slideChangeTransitionStart: function() {
+                    const slides = this.slides;
+                    for (let i = 0; i < slides.length; i++) {
+                        const overlay = slides[i].querySelector('.hero-content-overlay');
+                        if (overlay) {
+                            overlay.style.opacity = '0';
+                            overlay.style.transform = 'translateY(20px)';
+                        }
+                    }
+                },
+                slideChangeTransitionEnd: function() {
+                    const activeSlide = this.slides[this.activeIndex];
+                    const overlay = activeSlide.querySelector('.hero-content-overlay');
+                    if (overlay) {
+                        overlay.style.opacity = '1';
+                        overlay.style.transform = 'translateY(0)';
+                    }
+                }
             }
+        });
+        
+        // Add hover effect to cards
+        const cards = document.querySelectorAll('.past-event-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
         });
     });
 </script>

@@ -16,35 +16,50 @@
             
             <div class="form-group">
                 <label>Title</label>
-                <input type="text" name="titre" value="{{ $evenement->titre }}" class="form-input" required>
+                <input type="text" name="titre" value="{{ old('titre', $evenement->titre) }}" class="form-input" required>
+                @error('titre')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="form-group">
                 <label>Description</label>
-                <textarea name="description" rows="4" class="form-input" required>{{ $evenement->description }}</textarea>
+                <textarea name="description" rows="4" class="form-input" required>{{ old('description', $evenement->description) }}</textarea>
+                @error('description')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Start Date</label>
-                    <input type="date" name="date" value="{{ $evenement->date->format('Y-m-d') }}" class="form-input" required>
+                    <input type="date" name="date" value="{{ old('date', $evenement->date->format('Y-m-d')) }}" class="form-input" required>
+                    @error('date')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label>End Date</label>
-                    <input type="date" name="end_date" value="{{ $evenement->end_date ? $evenement->end_date->format('Y-m-d') : '' }}" class="form-input">
+                    <input type="date" name="end_date" value="{{ old('end_date', $evenement->end_date ? $evenement->end_date->format('Y-m-d') : '') }}" class="form-input">
+                    @error('end_date')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Status</label>
                 <select name="status" class="form-input" required>
-                    <option value="scheduled" {{ $evenement->status == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-                    <option value="ongoing" {{ $evenement->status == 'ongoing' ? 'selected' : '' }}>Ongoing</option>
-                    <option value="completed" {{ $evenement->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="scheduled" {{ old('status', $evenement->status) == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                    <option value="ongoing" {{ old('status', $evenement->status) == 'ongoing' ? 'selected' : '' }}>Ongoing</option>
+                    <option value="completed" {{ old('status', $evenement->status) == 'completed' ? 'selected' : '' }}>Completed</option>
                 </select>
+                @error('status')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
 
-            @if($evenement->images)
+            @if($evenement->images && count($evenement->images) > 0)
             <div class="form-group">
                 <label>Current Images</label>
                 <div class="image-preview">
@@ -62,7 +77,13 @@
             <div class="form-group">
                 <label>Add More Images</label>
                 <input type="file" name="images[]" multiple class="form-input">
-                <p class="form-hint">You can select multiple images</p>
+                <p class="form-hint">You can select multiple images (JPEG, PNG, JPG, GIF, max 2MB each)</p>
+                @error('images')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
+                @error('images.*')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="form-actions">
@@ -154,24 +175,44 @@
             font-size: 12px;
             line-height: 1;
         }
+        
+        .text-danger {
+            color: #f87171;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
     </style>
 
     <script>
         function removeImage(button, imagePath) {
-            // Add the image to a hidden field to track removed images
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'removed_images[]';
-            input.value = imagePath;
-            document.querySelector('form').appendChild(input);
+            // Get the existing images input
+            const existingImagesInput = document.getElementById('existing_images');
+            let existingImages = [];
+            
+            if (existingImagesInput && existingImagesInput.value) {
+                existingImages = JSON.parse(existingImagesInput.value);
+            }
+            
+            // Add the image to removed_images array
+            const removedInput = document.createElement('input');
+            removedInput.type = 'hidden';
+            removedInput.name = 'removed_images[]';
+            removedInput.value = imagePath;
+            document.querySelector('form').appendChild(removedInput);
             
             // Remove the image element
             button.parentElement.remove();
             
             // Update the existing_images field
-            const existingImages = JSON.parse(document.getElementById('existing_images').value);
             const updatedImages = existingImages.filter(img => img !== imagePath);
-            document.getElementById('existing_images').value = JSON.stringify(updatedImages);
+            
+            if (updatedImages.length > 0) {
+                existingImagesInput.value = JSON.stringify(updatedImages);
+            } else {
+                // If no images left, remove the input entirely
+                existingImagesInput.remove();
+            }
         }
     </script>
 @endsection

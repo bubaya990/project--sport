@@ -14,7 +14,9 @@
         <div class="nav-section">
             <div class="nav-section-title">Main</div>
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
-            <a href="#">About us</a>
+             <a href="{{ route('aboutus.index') }}">About us</a>
+
+            
             <a href="{{ route('evenements.index') }}" class="{{ request()->routeIs('evenements.*') ? 'active' : '' }}">Our events</a>
         </div>
         

@@ -26,6 +26,10 @@
             --card-border: rgba(0, 200, 215, 0.15);
         }
         
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--darker);
@@ -33,6 +37,7 @@
             line-height: 1.6;
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         /* Main Content */
@@ -42,6 +47,8 @@
             background: linear-gradient(135deg, #1a2332 0%, #2d3748 50%, #374151 100%);
             min-height: 100vh;
             width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
         }
 
         /* Top Navigation */
@@ -50,17 +57,32 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 24px;
-            background: var(--secondary);
+            background: rgba(30, 41, 59, 0.7);
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        .top-nav.scrolled {
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
         }
 
         .nav-logo {
             font-size: 20px;
             font-weight: 700;
             color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
         }
 
         .nav-search {
@@ -77,6 +99,13 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-light);
         }
 
         .nav-user {
@@ -95,6 +124,13 @@
             justify-content: center;
             color: white;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 3px rgba(0, 200, 215, 0.3);
         }
 
         /* Section Card */
@@ -105,6 +141,14 @@
             margin: 24px 0;
             border: 1px solid var(--card-border);
             backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .section-header {
@@ -124,6 +168,11 @@
             justify-content: center;
             font-size: 20px;
             color: white;
+            transition: all 0.3s ease;
+        }
+
+        .section-header:hover .section-icon {
+            transform: rotate(10deg) scale(1.1);
         }
 
         .section-title {
@@ -133,171 +182,15 @@
             flex: 1;
         }
 
-        /* Buttons */
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 200, 215, 0.3);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 13px;
-        }
-
-        /* Events Grid */
-        .events-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .event-card {
-            background: rgba(0, 140, 150, 0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0, 140, 150, 0.2);
-        }
-
-        .event-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 140, 150, 0.3);
-            border-color: rgba(0, 140, 150, 0.4);
-        }
-
-        .event-image-container {
+        /* Main Content Container */
+        .main-content {
             width: 100%;
-            height: 200px;
-            overflow: hidden;
-        }
-
-        .event-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .event-image-placeholder {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #008c96, #1a648c);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-        }
-
-        .event-details {
-            padding: 15px;
-        }
-
-        .event-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .event-date {
-            font-size: 12px;
-            color: #008c96;
-            font-weight: 600;
-        }
-
-        .event-status {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-
-        .status-scheduled {
-            background: rgba(251, 191, 36, 0.2);
-            color: #d97706;
-        }
-
-        .status-ongoing {
-            background: rgba(16, 185, 129, 0.2);
-            color: #059669;
-        }
-
-        .status-completed {
-            background: rgba(239, 68, 68, 0.2);
-            color: #dc2626;
-        }
-
-        .event-title {
-            font-size: 16px;
-            color: #ffffff;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .event-desc {
-            font-size: 14px;
-            color: #a0aec0;
-            margin-bottom: 15px;
-        }
-
-        .event-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-            color: #a0aec0;
-            background: rgba(0, 140, 150, 0.05);
-            border-radius: 12px;
-            margin-top: 20px;
+            max-width: 100%;
+            overflow-x: hidden;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .events-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .top-nav {
                 flex-direction: column;
                 gap: 15px;
@@ -308,6 +201,10 @@
                 width: 100%;
                 margin: 10px 0;
             }
+            
+            .section-card {
+                padding: 16px;
+            }
         }
     </style>
     @stack('styles')
@@ -317,7 +214,7 @@
     
     <div class="main">
         <!-- Top Navigation Bar -->
-        <nav class="top-nav">
+        <nav class="top-nav" id="topNav">
             <div class="nav-logo">My app</div>
         
             <div class="nav-search">
@@ -325,9 +222,9 @@
             </div>
             
             <div class="nav-user">
-                <div class="user-avatar">
+                <a href="{{ route('profile.edit') }}" class="user-avatar">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
+                </a>
             </div>
         </nav>
 
@@ -338,6 +235,17 @@
     </div>
 
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('topNav');
+            if (window.scrollY > 10) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

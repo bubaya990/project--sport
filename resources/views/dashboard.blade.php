@@ -1,620 +1,428 @@
-@extends('layouts.sidebar')
+@extends('layouts.app')
 
 @section('title', 'Dashboard')
 
 @section('content')
-    <!-- Header Section with Search -->
-    <div class="header-section">
-        <div class="search-container">
-            <div class="search-icon">🔍</div>
-            <input type="text" class="search-bar" placeholder="Search events, plans, or anything...">
+<div id="dashboardContent">
+    <!-- Hero Section with Full-Width Swiper -->
+    <div class="hero-section">
+        <div class="events-swiper">
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    @forelse($upcomingEvents as $event)
+                    <div class="swiper-slide">
+                        <div class="hero-event-card">
+                            @if($event->images && count($event->images) > 0)
+                            <img src="{{ asset('storage/'.$event->images[0]) }}" alt="{{ $event->titre }}" class="hero-bg-image">
+                            @else
+                            <div class="hero-bg-image placeholder"></div>
+                            @endif
+                            <div class="hero-content-overlay">
+                                <div class="event-meta">
+                                    <span class="event-date">{{ $event->date->format('M d, Y') }}</span>
+                                    <span class="event-status {{ $event->status }}">{{ ucfirst($event->status) }}</span>
+                                </div>
+                                <h1 class="hero-title">{{ $event->titre }}</h1>
+                                <p class="hero-description">{{ Str::limit($event->description, 150) }}</p>
+                                <div class="event-details">
+                                    @if($event->date)
+                                    <span class="detail-item">⏰ {{ $event->date->format('h:i A') }}</span>
+                                    @endif
+                                    @if($event->lieu)
+                                    <span class="detail-item">📍 {{ $event->lieu }}</span>
+                                    @endif
+                                </div>
+                              <div class="hero-actions">
+    <a href="#" class="btn btn-primary">Learn More</a>
+    @if(auth()->user()->is_admin)
+    <div class="admin-actions">
+        <a href="{{ route('evenements.edit', $event->id) }}" class="btn-icon">✏️</a>
+        <form action="{{ route('evenements.destroy', $event->id) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn-icon">🗑️</button>
+        </form>
+    </div>
+    @endif
+</div>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="swiper-slide">
+                        <div class="no-events hero-event-card">
+                            <div class="empty-state">
+                                <div class="empty-icon">📅</div>
+                                <h3>No upcoming events</h3>
+                                <p>Check back later for new events</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
         </div>
-        <div class="user-info">
-            <div class="user-avatar">JD</div>
-            <div class="user-details">
-                <h3>John Doe</h3>
-                <p id="currentRole">Participant</p>
+    </div>
+
+    <!-- Past Experiences Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon">📅</div>
+            <h2 class="section-title">Past Experiences</h2>
+        </div>
+        
+        <div class="past-events-grid">
+            @forelse($completedEvents as $event)
+            <div class="past-event-card">
+                @if($event->images && count($event->images) > 0)
+                <img src="{{ asset('storage/'.$event->images[0]) }}" alt="{{ $event->titre }}" class="past-event-image">
+                @else
+                <div class="past-event-image placeholder"></div>
+                @endif
+                <div class="past-event-content">
+                    <div class="event-date">{{ $event->date->format('M d, Y') }}</div>
+                    <h3 class="event-title">{{ $event->titre }}</h3>
+                    <p class="event-description">{{ Str::limit($event->description, 100) }}</p>
+                    <a href="{{ route('evenements.show', $event->id) }}" class="btn btn-outline">View Photos</a>
+                </div>
+            </div>
+            @empty
+            <div class="no-events">
+                <div class="empty-state">
+                    <div class="empty-icon">🏆</div>
+                    <h3>No past experiences</h3>
+                    <p>Your completed events will appear here</p>
+                </div>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
+    <!-- Contact & Support Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon">📞</div>
+            <h2 class="section-title">Contact & Support</h2>
+            @if(auth()->user()->is_admin)
+            <div class="admin-controls">
+                <button class="btn btn-warning btn-small">Edit</button>
+            </div>
+            @endif
+        </div>
+        
+        <div class="contact-container">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <div>
+                        <h4>Our Location</h4>
+                        <p>123 Event Street, Activity City</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <div>
+                        <h4>Email Us</h4>
+                        <p>support@eventmanager.com</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📱</div>
+                    <div>
+                        <h4>Call Us</h4>
+                        <p>(123) 456-7890</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="social-links">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="#" class="social-link facebook">f</a>
+                    <a href="#" class="social-link twitter">𝕏</a>
+                    <a href="#" class="social-link instagram">📷</a>
+                    <a href="#" class="social-link youtube">▶️</a>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Role Toggle -->
-    <div class="role-toggle">
-        <button class="role-btn active" onclick="switchRole('participant')">Participant View</button>
-        <button class="role-btn" onclick="switchRole('admin')">Admin View</button>
-    </div>
-
-    <!-- Dashboard Content -->
-    <div id="dashboardContent">
-        <!-- Content will be injected here by JavaScript -->
-    </div>
-
-    <style>
-        /* Header Section */
-        .header-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            background: rgba(0, 140, 150, 0.08);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(0, 140, 150, 0.2);
-            position: relative;
-            overflow: hidden;
+<style>
+    /* Hero Section Styles */
+    .hero-section {
+        margin: 0 -20px;
+    }
+    
+    .events-swiper {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+    
+    .swiper-container {
+        width: 100%;
+        height: 80vh;
+        min-height: 500px;
+    }
+    
+    .hero-event-card {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .hero-bg-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .hero-bg-image.placeholder {
+        background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+    }
+    
+    .hero-content-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 40px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+        color: white;
+    }
+    
+    .event-meta {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .event-date {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .event-status {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .event-status.scheduled {
+        background: rgba(0, 200, 215, 0.2);
+        color: var(--primary);
+    }
+    
+    .event-status.ongoing {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--warning);
+    }
+    
+    .event-status.completed {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--success);
+    }
+    
+    .hero-title {
+        margin: 0 0 16px;
+        font-size: 36px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    
+    .hero-description {
+        margin: 0 0 24px;
+        font-size: 16px;
+        max-width: 700px;
+        line-height: 1.5;
+    }
+    
+    .event-details {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+    
+    .hero-actions {
+        display: flex;
+        gap: 16px;
+    }
+    
+    .admin-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    /* Past Events Grid */
+    .past-events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .past-event-card {
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--secondary);
+        transition: transform 0.3s ease;
+    }
+    
+    .past-event-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .past-event-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+    
+    .past-event-image.placeholder {
+        background: linear-gradient(135deg, var(--secondary-light), var(--secondary));
+    }
+    
+    .past-event-content {
+        padding: 16px;
+    }
+    
+    /* Contact Section */
+    .contact-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+    
+    .contact-info {
+        display: grid;
+        gap: 20px;
+    }
+    
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: var(--primary);
+    }
+    
+    .social-links h4 {
+        margin: 0 0 15px;
+        font-size: 16px;
+        color: var(--text);
+    }
+    
+    .social-icons {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .social-link {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .facebook { background: #1877f2; }
+    .twitter { background: #1da1f2; }
+    .instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .youtube { background: #ff0000; }
+    
+    /* Empty States */
+    .no-events {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: var(--secondary);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+    }
+    
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-content-overlay {
+            padding: 24px;
         }
-
-        .header-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 140, 150, 0.1), transparent);
-            animation: headerGlow 3s ease-in-out infinite;
+        
+        .hero-title {
+            font-size: 28px;
         }
-
-        @keyframes headerGlow {
-            0% { left: -100%; }
-            100% { left: 100%; }
+        
+        .contact-container {
+            grid-template-columns: 1fr;
         }
-
-        .search-container {
-            flex: 1;
-            position: relative;
+        
+        .swiper-container {
+            height: 70vh;
         }
+    }
+</style>
 
-        .search-bar {
-            width: 90%;
-            padding: 15px 20px 15px 50px;
-            background: rgba(45, 55, 72, 0.8);
-            border: 2px solid rgba(0, 140, 150, 0.3);
-            border-radius: 25px;
-            color: #e2e8f0;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
+<!-- Include Swiper JS -->
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
-        .search-bar:focus {
-            border-color: #008c96;
-            box-shadow: 0 0 20px rgba(0, 140, 150, 0.3);
-            background: rgba(45, 55, 72, 0.9);
-        }
-
-        .search-bar::placeholder {
-            color: #a0aec0;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #008c96;
-            font-size: 18px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(45, 55, 72, 0.6);
-            padding: 12px 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 140, 150, 0.2);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #008c96, #1a648c);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .user-details h3 {
-            margin: 0;
-            font-size: 14px;
-            color: #ffffff;
-        }
-
-        .user-details p {
-            margin: 0;
-            font-size: 12px;
-            color: #a0aec0;
-        }
-
-        /* Role Toggle */
-        .role-toggle {
-            background: rgba(0, 140, 150, 0.1);
-            padding: 10px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .role-btn {
-            padding: 8px 20px;
-            background: transparent;
-            color: #a0aec0;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .role-btn.active {
-            background: linear-gradient(135deg, #008c96, #1a648c);
-            color: white;
-            box-shadow: 0 4px 15px rgba(0, 140, 150, 0.3);
-        }
-
-        /* Dashboard Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        /* Section Cards */
-        .section-card {
-            background: linear-gradient(135deg, rgba(45, 55, 72, 0.8), rgba(26, 35, 50, 0.9));
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(0, 140, 150, 0.2);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .section-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #008c96, #1a648c);
-            opacity: 0.8;
-        }
-
-        .section-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 140, 150, 0.2);
-            border-color: rgba(0, 140, 150, 0.4);
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .section-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, #008c96, #1a648c);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #ffffff;
-            margin: 0;
-        }
-
-        /* Plan Section */
-        .plan-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #008c96, #1a648c);
-            border-radius: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .plan-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="75" cy="25" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="25" cy="75" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #008c96, #1a648c);
-            color: white;
-            margin-bottom: 10px;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 140, 150, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(0, 140, 150, 0.2);
-            color: #008c96;
-            border: 1px solid rgba(0, 140, 150, 0.3);
-            width: 100%;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(0, 140, 150, 0.3);
-            color: white;
-        }
-
-        /* Events Section */
-        .event-item {
-            background: rgba(0, 140, 150, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border-left: 4px solid #008c96;
-            transition: all 0.3s ease;
-        }
-
-        .event-item:hover {
-            background: rgba(0, 140, 150, 0.2);
-            transform: translateX(5px);
-        }
-
-        .event-date {
-            font-size: 12px;
-            color: #008c96;
-            font-weight: 600;
-        }
-
-        .event-title {
-            font-size: 16px;
-            color: #ffffff;
-            margin: 5px 0;
-        }
-
-        .event-desc {
-            font-size: 14px;
-            color: #a0aec0;
-        }
-
-        /* Contact Section */
-        .social-links {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .social-link {
-            width: 50px;
-            height: 50px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 20px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .social-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.5s ease;
-        }
-
-        .social-link:hover::before {
-            transform: translateX(100%);
-        }
-
-        .social-link.facebook { background: linear-gradient(135deg, #1877f2, #42a5f5); color: white; }
-        .social-link.twitter { background: linear-gradient(135deg, #1da1f2, #42a5f5); color: white; }
-        .social-link.instagram { background: linear-gradient(135deg, #e4405f, #fd1d1d, #fcb045); color: white; }
-        .social-link.linkedin { background: linear-gradient(135deg, #0077b5, #00a0dc); color: white; }
-
-        .social-link:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 8px 25px rgba(0, 140, 150, 0.3);
-        }
-
-        /* Admin Sections */
-        .admin-controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 14px;
-            flex: 1;
-            min-width: 80px;
-        }
-
-        .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
-        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-
-        .btn-success:hover, .btn-warning:hover, .btn-danger:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Inscriptions Section */
-        .inscription-item {
-            background: rgba(0, 140, 150, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .inscription-info h4 {
-            margin: 0 0 5px 0;
-            color: #ffffff;
-        }
-
-        .inscription-info p {
-            margin: 0;
-            color: #a0aec0;
-            font-size: 14px;
-        }
-
-        .inscription-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-        .status-approved { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .status-rejected { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-    </style>
-
-    <script>
-        let currentRole = 'participant';
-
-        function switchRole(role) {
-            currentRole = role;
-            
-            // Update role buttons
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Update user role display
-            document.getElementById('currentRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
-            
-            // Update dashboard content
-            updateDashboardContent(role);
-        }
-
-        function updateDashboardContent(role) {
-            const dashboardContent = document.getElementById('dashboardContent');
-            
-            if (role === 'participant') {
-                dashboardContent.innerHTML = `
-                    <div class="dashboard-grid">
-                        <!-- Plans Section -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <div class="section-icon">📋</div>
-                                <h2 class="section-title">Our Plans</h2>
-                            </div>
-                            <div class="plan-image">
-                                <span>Premium Fitness Plan</span>
-                            </div>
-                            <p style="color: #a0aec0; margin-bottom: 20px;">
-                                Transform your fitness journey with our comprehensive training program designed for all levels.
-                            </p>
-                            <a href="#" class="btn btn-primary">Learn About Us</a>
-                            <a href="#" class="btn btn-secondary">Sign Up Now</a>
-                        </div>
-
-                        <!-- Discover Events -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <div class="section-icon">🎯</div>
-                                <h2 class="section-title">Discover Events</h2>
-                            </div>
-                            <div class="event-item">
-                                <div class="event-date">Dec 15, 2024</div>
-                                <div class="event-title">Winter Fitness Challenge</div>
-                                <div class="event-desc">Join our community challenge and win amazing prizes!</div>
-                            </div>
-                            <div class="event-item">
-                                <div class="event-date">Dec 20, 2024</div>
-                                <div class="event-title">Yoga & Meditation Workshop</div>
-                                <div class="event-desc">Find your inner peace with our expert instructors.</div>
-                            </div>
-                            <div class="event-item">
-                                <div class="event-date">Dec 25, 2024</div>
-                                <div class="event-title">Holiday Bootcamp</div>
-                                <div class="event-desc">Stay fit during the holidays with our special program.</div>
-                            </div>
-                            <a href="#" class="btn btn-secondary" style="margin-top: 15px;">See All Events</a>
-                        </div>
-
-                        <!-- Contact Section -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <div class="section-icon">📞</div>
-                                <h2 class="section-title">Contact Us</h2>
-                            </div>
-                            <p style="color: #a0aec0; margin-bottom: 20px;">
-                                Stay connected with us on social media for updates, tips, and community support.
-                            </p>
-                            <div class="social-links">
-                                <a href="#" class="social-link facebook">📘</a>
-                                <a href="#" class="social-link twitter">🐦</a>
-                                <a href="#" class="social-link instagram">📷</a>
-                                <a href="#" class="social-link linkedin">💼</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                dashboardContent.innerHTML = `
-                    <div class="dashboard-grid">
-                        <!-- Inscriptions Management -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <div class="section-icon">👥</div>
-                                <h2 class="section-title">Inscriptions</h2>
-                            </div>
-                            <div class="inscription-item">
-                                <div class="inscription-info">
-                                    <h4>Sarah Johnson</h4>
-                                    <p>Premium Plan • Registered 2 days ago</p>
-                                </div>
-                                <span class="inscription-status status-pending">Pending</span>
-                            </div>
-                            <div class="inscription-item">
-                                <div class="inscription-info">
-                                    <h4>Mike Chen</h4>
-                                    <p>Basic Plan • Registered 1 week ago</p>
-                                </div>
-                                <span class="inscription-status status-approved">Approved</span>
-                            </div>
-                            <div class="inscription-item">
-                                <div class="inscription-info">
-                                    <h4>Emily Davis</h4>
-                                    <p>Premium Plan • Registered 3 days ago</p>
-                                </div>
-                                <span class="inscription-status status-rejected">Rejected</span>
-                            </div>
-                            <a href="#" class="btn btn-primary" style="margin-top: 15px;">View All Inscriptions</a>
-                        </div>
-
-                        <!-- Plans Management -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <div class="section-icon">📋</div>
-                                <h2 class="section-title">Manage Plans</h2>
-                            </div>
-                            <div class="plan-image">
-                                <span>Current Featured Plan</span>
-                            </div>
-                            <p style="color: #a0aec0; margin-bottom: 20px;">
-                                Manage your fitness plans, update content, images, and pricing information.
-                            </p>
-                            <div class="admin-controls">
-                                <button class="btn btn-success btn-small">Add Plan</button>
-                                <button class="btn btn-warning btn-small">Edit</button>
-                                <button class="btn btn-danger btn-small">Delete</button>
-                            </div>
-                        </div>
-
-                        <!-- Events Management -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <div class="section-icon">🎯</div>
-                                <h2 class="section-title">Manage Events</h2>
-                            </div>
-                            <div class="event-item">
-                                <div style="flex: 1;">
-                                    <div class="event-date">Dec 15, 2024</div>
-                                    <div class="event-title">Winter Fitness Challenge</div>
-                                    <div class="event-desc">45 participants registered</div>
-                                </div>
-                                <div style="display: flex; gap: 5px;">
-                                    <button class="btn btn-warning btn-small" style="padding: 6px 10px; font-size: 12px;">Edit</button>
-                                    <button class="btn btn-danger btn-small" style="padding: 6px 10px; font-size: 12px;">Delete</button>
-                                </div>
-                            </div>
-                            <div class="event-item">
-                                <div style="flex: 1;">
-                                    <div class="event-date">Dec 20, 2024</div>
-                                    <div class="event-title">Yoga & Meditation Workshop</div>
-                                    <div class="event-desc">23 participants registered</div>
-                                </div>
-                                <div style="display: flex; gap: 5px;">
-                                    <button class="btn btn-warning btn-small" style="padding: 6px 10px; font-size: 12px;">Edit</button>
-                                    <button class="btn btn-danger btn-small" style="padding: 6px 10px; font-size: 12px;">Delete</button>
-                                </div>
-                            </div>
-                            <button class="btn btn-success" style="margin-top: 15px;">Add New Event</button>
-                        </div>
-
-                        <!-- Contact Management -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <div class="section-icon">📞</div>
-                                <h2 class="section-title">Manage Contacts</h2>
-                            </div>
-                            <p style="color: #a0aec0; margin-bottom: 20px;">
-                                Update social media links and contact information displayed to users.
-                            </p>
-                            <div class="social-links" style="margin-bottom: 20px;">
-                                <a href="#" class="social-link facebook">📘</a>
-                                <a href="#" class="social-link twitter">🐦</a>
-                                <a href="#" class="social-link instagram">📷</a>
-                                <a href="#" class="social-link linkedin">💼</a>
-                            </div>
-                            <div class="admin-controls">
-                                <button class="btn btn-success btn-small">Add Social</button>
-                                <button class="btn btn-warning btn-small">Edit Links</button>
-                                <button class="btn btn-danger btn-small">Remove</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Swiper
+        const swiper = new Swiper('.swiper-container', {
+            slidesPerView: 1,
+            spaceBetween: 0,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
             }
-        }
-
-        // Initialize with participant view
-        document.addEventListener('DOMContentLoaded', function() {
-            switchRole('participant');
         });
-    </script>
+    });
+</script>
 @endsection

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription</title>
+    <title>Connexion</title>
     <style>
         body { 
             margin: 0; 
@@ -17,7 +17,7 @@
             padding: 20px;
         }
 
-        .register-container {
+        .login-container {
             width: 100%;
             max-width: 500px;
             background: linear-gradient(135deg, rgba(45, 55, 72, 0.9), rgba(26, 35, 50, 0.95));
@@ -29,7 +29,7 @@
             overflow: hidden;
         }
 
-        .register-container::before {
+        .login-container::before {
             content: '';
             position: absolute;
             top: 0;
@@ -45,13 +45,13 @@
             100% { left: 100%; }
         }
 
-        .register-header {
+        .login-header {
             text-align: center;
             margin-bottom: 30px;
             position: relative;
         }
 
-        .register-header h2 {
+        .login-header h2 {
             font-size: 28px;
             margin: 0;
             color: white;
@@ -59,7 +59,7 @@
             display: inline-block;
         }
 
-        .register-header h2::after {
+        .login-header h2::after {
             content: '';
             position: absolute;
             bottom: -10px;
@@ -70,7 +70,7 @@
             background: linear-gradient(90deg, #008c96, #1a648c);
         }
 
-        .register-header p {
+        .login-header p {
             margin-top: 10px;
             color: #a0aec0;
             font-size: 14px;
@@ -103,12 +103,6 @@
             border-color: #008c96;
             box-shadow: 0 0 10px rgba(0, 140, 150, 0.3);
             background: rgba(26, 35, 50, 0.9);
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
         }
 
         .social-login {
@@ -206,20 +200,20 @@
             box-shadow: 0 5px 15px rgba(0, 140, 150, 0.4);
         }
 
-        .login-link {
+        .register-link {
             text-align: center;
             margin-top: 20px;
             color: #a0aec0;
             font-size: 14px;
         }
 
-        .login-link a {
+        .register-link a {
             color: #008c96;
             text-decoration: none;
             transition: color 0.3s ease;
         }
 
-        .login-link a:hover {
+        .register-link a:hover {
             color: #1a648c;
             text-decoration: underline;
         }
@@ -234,17 +228,38 @@
             font-size: 14px;
         }
 
-        .error-message ul {
-            margin: 0;
-            padding-left: 20px;
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+        }
+
+        .forgot-password a {
+            color: #008c96;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="register-container">
-        <div class="register-header">
-            <h2>Créer un compte</h2>
-            <p>Rejoignez notre plateforme</p>
+    <div class="login-container">
+        <div class="login-header">
+            <h2>Connexion</h2>
+            <p>Accédez à votre compte</p>
         </div>
 
         @if ($errors->any())
@@ -277,19 +292,12 @@
         </div>
 
         <div class="social-login">
-            <span>Ou inscrivez-vous avec votre email</span>
+            <span>Ou connectez-vous avec votre email</span>
         </div>
 
-        <form method="POST" action="{{ route('register') }}">
+        <form method="POST" action="{{ route('login') }}">
             @csrf
             
-            <div class="form-group">
-                <label for="name">Nom complet</label>
-                <input id="name" name="name" type="text" required 
-                       value="{{ old('name') }}"
-                       class="form-control">
-            </div>
-
             <div class="form-group">
                 <label for="email">Email</label>
                 <input id="email" name="email" type="email" required 
@@ -298,62 +306,28 @@
             </div>
 
             <div class="form-group">
-                <label for="telephone">Téléphone</label>
-                <input id="telephone" name="telephone" type="tel" required 
-                       value="{{ old('telephone') }}"
-                       placeholder="+213..."
+                <label for="password">Mot de passe</label>
+                <input id="password" name="password" type="password" required 
                        class="form-control">
             </div>
 
-            <div class="grid-2">
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <input id="password" name="password" type="password" required 
-                           class="form-control">
+            <div class="remember-forgot">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Se souvenir de moi</label>
                 </div>
-                <div class="form-group">
-                    <label for="password_confirmation">Confirmer</label>
-                    <input id="password_confirmation" name="password_confirmation" type="password" required 
-                           class="form-control">
+                <div class="forgot-password">
+                    <a href="{{ route('password.request') }}">Mot de passe oublié?</a>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label for="adresse">Adresse</label>
-                <input id="adresse" name="adresse" type="text" 
-                       value="{{ old('adresse') }}"
-                       class="form-control">
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group">
-                    <label for="ville">Ville</label>
-                    <input id="ville" name="ville" type="text" 
-                           value="{{ old('ville') }}"
-                           class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="date_naissance">Date de naissance</label>
-                    <input id="date_naissance" name="date_naissance" type="date" 
-                           value="{{ old('date_naissance') }}"
-                           class="form-control">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="profession">Profession</label>
-                <input id="profession" name="profession" type="text" 
-                       value="{{ old('profession') }}"
-                       class="form-control">
             </div>
 
             <button type="submit" class="btn btn-primary">
-                S'inscrire
+                Se connecter
             </button>
         </form>
 
-        <div class="login-link">
-            Vous avez déjà un compte? <a href="{{ route('login') }}">Se connecter</a>
+        <div class="register-link">
+            Vous n'avez pas de compte? <a href="{{ route('register') }}">S'inscrire</a>
         </div>
     </div>
 

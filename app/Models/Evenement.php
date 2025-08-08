@@ -10,10 +10,12 @@ class Evenement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'titre', 'description', 'date', 'images',
+        'titre', 'description', 'date', 'end_date', 'status', 'images',
     ];
 
     protected $casts = [
-        'images' => 'array', // Laravel va convertir JSON <-> array automatiquement
+        'date' => 'datetime',
+        'end_date' => 'datetime',
+        'images' => 'array',
     ];
 }

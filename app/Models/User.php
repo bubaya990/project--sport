@@ -23,7 +23,13 @@ class User extends Authenticatable
     ];
 
     protected $hidden = ['password', 'remember_token'];
-
+public function isAdmin()
+    {
+        // Assuming you have an 'is_admin' column in your users table
+        return $this->is_admin === true;
+        
+      
+    }
 
     public function paiement()
     {

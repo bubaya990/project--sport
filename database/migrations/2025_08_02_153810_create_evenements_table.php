@@ -13,14 +13,15 @@ return new class extends Migration
     {
        
         Schema::create('evenements', function (Blueprint $table) {
-            $table->id();
-             $table->string('titre');
-            $table->text('description');
-             $table->date('date');
-             $table->json('images')->nullable();
-             $table->timestamps();
-
-         });
+    $table->id();
+    $table->string('titre');
+    $table->text('description');
+    $table->date('date');
+    $table->date('end_date')->nullable(); // Add end date
+    $table->enum('status', ['scheduled', 'ongoing', 'completed'])->default('scheduled'); // Add status
+    $table->json('images')->nullable();
+    $table->timestamps();
+});
 
          
     }

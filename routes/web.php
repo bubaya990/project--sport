@@ -1,26 +1,45 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-Route::middleware('auth')->group(function () {
-    Route::get('/verify-phone', [PhoneVerificationController::class, 'show'])->name('verification.notice');
-    Route::post('/verify-phone', [PhoneVerificationController::class, 'verify'])->name('verification.verify');
-    Route::post('/verify-phone/resend', [PhoneVerificationController::class, 'resend'])->name('verification.resend');
-});
+
+
+
+ // Evenments
+Route::resource('evenements', \App\Http\Controllers\EvenementController::class)
+    ->except(['show'])
+    ->middleware('auth');
+
+
+Route::get('evenements/{evenement}', [\App\Http\Controllers\EvenementController::class, 'show'])
+    ->name('evenements.show');
+
+Route::resource('evenements/add', \App\Http\Controllers\EvenementController::class)
+    ->except(['evenements.add']);
+
+
+
+/*  
 // Socialite Routes
 Route::prefix('auth')->group(function () {
     Route::get('/google', [RegisteredUserController::class, 'redirectToGoogle'])->name('auth.google');
@@ -28,7 +47,7 @@ Route::prefix('auth')->group(function () {
     
     Route::get('/apple', [RegisteredUserController::class, 'redirectToApple'])->name('auth.apple');
     Route::get('/apple/callback', [RegisteredUserController::class, 'handleAppleCallback']);
-});
-Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-Route::post('/payments/process', [PaymentController::class, 'process'])->name('payments.process');
+});*/
+
+
 require __DIR__.'/auth.php';

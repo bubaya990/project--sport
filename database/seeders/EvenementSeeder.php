@@ -13,6 +13,8 @@ class EvenementSeeder extends Seeder
             'titre' => 'Conférence Laravel 2025',
             'description' => 'Une conférence pour les passionnés de Laravel avec des ateliers et des talks techniques.',
             'date' => now()->addDays(10)->format('Y-m-d'),
+            'end_date' => now()->addDays(12)->format('Y-m-d'),
+            'status' => 'scheduled',
             'images' => [
                 'evenements/laravel_1.jpg',
                 'evenements/laravel_2.jpg',
@@ -23,6 +25,8 @@ class EvenementSeeder extends Seeder
             'titre' => 'Hackathon National',
             'description' => 'Un hackathon de 48h ouvert aux étudiants et professionnels du numérique.',
             'date' => now()->addWeeks(3)->format('Y-m-d'),
+            'end_date' => now()->addWeeks(3)->addDays(2)->format('Y-m-d'),
+            'status' => 'scheduled',
             'images' => [
                 'evenements/hackathon_1.jpg',
             ],
@@ -32,6 +36,8 @@ class EvenementSeeder extends Seeder
             'titre' => 'Séminaire Leadership Tech',
             'description' => 'Un événement pour explorer le leadership dans le monde des nouvelles technologies.',
             'date' => now()->addMonth()->format('Y-m-d'),
+            'end_date' => now()->addMonth()->addDay()->format('Y-m-d'),
+            'status' => 'scheduled',
             'images' => [],
         ]);
     }

@@ -8,13 +8,11 @@
         <div class="section-header">
             <div class="section-icon">🎯</div>
             <h2 class="section-title">Manage Events</h2>
-            <a href="{{ route('evenements.create') }}" class="btn btn-add">
-                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                <span>Add New Event</span>
-            </a>
+            @if(Auth::check() && Auth::user()->isAdmin())
+                <a href="{{ route('evenements.create') }}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add New Event
+                </a>
+            @endif
         </div>
 
         @if($evenements->isEmpty())
@@ -22,13 +20,11 @@
                 <div class="empty-icon">📅</div>
                 <h3>No Events Found</h3>
                 <p>Get started by creating your first event</p>
-                <a href="{{ route('evenements.create') }}" class="btn btn-add">
-                    <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    <span>Create Event</span>
-                </a>
+                @if(Auth::check() && Auth::user()->isAdmin())
+                    <a href="{{ route('evenements.create') }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-plus"></i> Create Event
+                    </a>
+                @endif
             </div>
         @else
             <div class="events-grid">
@@ -64,28 +60,20 @@
                         <h3 class="event-title">{{ $evenement->titre }}</h3>
                         <p class="event-desc">{{ Str::limit($evenement->description, 100) }}</p>
                         
-                        <div class="event-actions">
-                            <a href="{{ route('evenements.edit', $evenement->id) }}" class="btn btn-edit">
-                                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                                <span>Edit</span>
-                            </a>
-                            <form action="{{ route('evenements.destroy', $evenement->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-delete">
-                                    <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                        <line x1="10" y1="11" x2="10" y2="17"></line>
-                                        <line x1="14" y1="11" x2="14" y2="17"></line>
-                                    </svg>
-                                    <span>Delete</span>
-                                </button>
-                            </form>
-                        </div>
+                        @if(Auth::check() && Auth::user()->isAdmin())
+                            <div class="event-actions">
+                                <a href="{{ route('evenements.edit', $evenement->id) }}" class="btn btn-warning btn-small">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form action="{{ route('evenements.destroy', $evenement->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-small">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 @endforeach
@@ -101,101 +89,7 @@
     </div>
 
     <style>
-        /* Button Styles */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-icon {
-            width: 18px;
-            height: 18px;
-            transition: all 0.3s ease;
-        }
-
-        /* Add Button */
-        .btn-add {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 4px 6px rgba(0, 200, 215, 0.2);
-        }
-
-        .btn-add:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 200, 215, 0.3);
-        }
-
-        .btn-add:active {
-            transform: translateY(0);
-        }
-
-        /* Edit Button */
-        .btn-edit {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .btn-edit:hover {
-            background: rgba(245, 158, 11, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(245, 158, 11, 0.1);
-        }
-
-        .btn-edit:active {
-            transform: translateY(0);
-        }
-
-        /* Delete Button */
-        .btn-delete {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-delete:hover {
-            background: rgba(239, 68, 68, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.1);
-        }
-
-        .btn-delete:active {
-            transform: translateY(0);
-        }
-
-        /* Button Ripple Effect */
-        .btn::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 1%, transparent 1%) center/15000%;
-            opacity: 0;
-            transition: opacity 0.5s, background-size 0.5s;
-        }
-
-        .btn:active::after {
-            background-size: 100%;
-            opacity: 1;
-            transition: 0s;
-        }
-
-        /* Rest of your existing styles... */
+        /* Events Grid */
         .events-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -212,7 +106,201 @@
             position: relative;
         }
 
-        /* ... (keep all your other existing styles) ... */
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 200, 215, 0.2);
+            border-color: var(--primary);
+        }
+
+        .event-card[data-status="ongoing"] {
+            border-left: 4px solid var(--warning);
+        }
+
+        .event-card[data-status="completed"] {
+            border-left: 4px solid var(--success);
+        }
+
+        .event-card[data-status="scheduled"] {
+            border-left: 4px solid var(--primary);
+        }
+
+        .event-image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .event-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .event-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .event-image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: var(--secondary-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .event-image-placeholder i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .event-details {
+            padding: 16px;
+        }
+
+        .event-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .event-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .event-date i {
+            font-size: 14px;
+        }
+
+        .date-separator {
+            margin: 0 5px;
+        }
+
+        .event-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .status-scheduled {
+            background: rgba(0, 200, 215, 0.2);
+            color: var(--primary);
+        }
+
+        .status-ongoing {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .event-title {
+            font-size: 16px;
+            margin: 0 0 8px;
+            color: var(--text);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .event-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .event-actions .btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Pagination */
+        .pagination-wrapper {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .page-item {
+            display: inline-block;
+        }
+
+        .page-link {
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: var(--secondary-light);
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .page-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary);
+            color: white;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -226,16 +314,7 @@
                 gap: 12px;
             }
             
-            .section-header .btn-add {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .event-actions {
-                flex-direction: column;
-            }
-            
-            .btn-edit, .btn-delete {
+            .section-header .btn {
                 width: 100%;
                 justify-content: center;
             }
@@ -261,26 +340,6 @@
                     if (img) img.style.transform = 'scale(1)';
                     if (overlay) overlay.style.opacity = '0';
                     this.style.boxShadow = 'none';
-                });
-            });
-            
-            // Add ripple effect to buttons
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const x = e.clientX - e.target.getBoundingClientRect().left;
-                    const y = e.clientY - e.target.getBoundingClientRect().top;
-                    
-                    const ripple = document.createElement('span');
-                    ripple.classList.add('ripple');
-                    ripple.style.left = `${x}px`;
-                    ripple.style.top = `${y}px`;
-                    this.appendChild(ripple);
-                    
-                    setTimeout(() => {
-                        ripple.remove();
-                    }, 1000);
                 });
             });
         });

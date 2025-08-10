@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Evenement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class EvenementController extends Controller
 {
@@ -22,6 +23,9 @@ class EvenementController extends Controller
      */
     public function create()
     {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
         return view('evenements.add');
     }
 
@@ -30,6 +34,10 @@ class EvenementController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'description' => 'required|string',
@@ -61,10 +69,21 @@ class EvenementController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Evenement $evenement)
+    {
+        return view('evenements.show', compact('evenement'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Evenement $evenement)
     {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
         return view('evenements.edit', compact('evenement'));
     }
 
@@ -73,6 +92,10 @@ class EvenementController extends Controller
      */
     public function update(Request $request, Evenement $evenement)
     {
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'description' => 'required|string',
@@ -85,21 +108,17 @@ class EvenementController extends Controller
             'existing_images' => 'nullable'
         ]);
 
-        // Start with existing images or empty array
         $images = $request->has('existing_images') 
             ? json_decode($request->input('existing_images'), true) 
             : [];
 
-        // Handle image removal
         if ($request->has('removed_images')) {
             foreach ($request->input('removed_images') as $removedImage) {
-                // Delete the file from storage
                 Storage::disk('public')->delete($removedImage);
             }
             $images = array_diff($images, $request->input('removed_images'));
         }
 
-        // Add new images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('evenements', 'public');
@@ -115,7 +134,6 @@ class EvenementController extends Controller
             'status' => $validated['status'],
         ];
 
-        // Only update images if we have some or explicitly want to remove all
         if (!empty($images) || $request->has('removed_images')) {
             $updateData['images'] = !empty($images) ? $images : null;
         }
@@ -130,7 +148,10 @@ class EvenementController extends Controller
      */
     public function destroy(Evenement $evenement)
     {
-        // Delete associated images
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         if ($evenement->images) {
             foreach ($evenement->images as $image) {
                 Storage::disk('public')->delete($image);
@@ -139,13 +160,5 @@ class EvenementController extends Controller
         
         $evenement->delete();
         return redirect()->route('evenements.index')->with('success', 'Event deleted successfully!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Evenement $evenement)
-    {
-        return view('evenements.show', compact('evenement'));
     }
 }

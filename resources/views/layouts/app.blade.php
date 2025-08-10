@@ -6,6 +6,8 @@
     <title>@yield('title')</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #00c8d7;
@@ -79,16 +81,56 @@
             font-weight: 700;
             color: var(--primary);
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .nav-logo:hover {
             transform: scale(1.05);
         }
 
+        .nav-logo i {
+            font-size: 22px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 5px;
+            margin: 0 20px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: rgba(0, 200, 215, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 200, 215, 0.2);
+        }
+
+        .nav-link i {
+            font-size: 16px;
+        }
+
         .nav-search {
             flex: 1;
-            max-width: 500px;
-            margin: 0 20px;
+            max-width: 400px;
         }
 
         .search-input {
@@ -126,6 +168,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
 
         .user-avatar:hover {
@@ -273,22 +316,25 @@
         }
 
         /* Button Ripple Effect */
-        .btn::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 1%, transparent 1%) center/15000%;
-            opacity: 0;
-            transition: opacity 0.5s, background-size 0.5s;
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn:active::after {
-            background-size: 100%;
-            opacity: 1;
-            transition: 0s;
+        .btn-ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: ripple 600ms linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         /* Main Content Container */
@@ -299,6 +345,16 @@
         }
 
         /* Responsive */
+        @media (max-width: 1024px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .nav-search {
+                margin: 0 10px;
+            }
+        }
+
         @media (max-width: 768px) {
             .top-nav {
                 flex-direction: column;
@@ -329,7 +385,25 @@
     <div class="main">
         <!-- Top Navigation Bar -->
         <nav class="top-nav" id="topNav">
-            <div class="nav-logo">My app</div>
+            <a href="{{ url('/') }}" class="nav-logo">
+                <i class="fas fa-home"></i>
+                <span>My App</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ route('aboutus.index') }}" class="nav-link {{ request()->routeIs('aboutus.*') ? 'active' : '' }}">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About Us</span>
+                </a>
+                <a href="{{ route('evenements.index') }}" class="nav-link {{ request()->routeIs('evenements.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Our Events</span>
+                </a>
+            </div>
         
             <div class="nav-search">
                 <input type="text" class="search-input" placeholder="Search events...">
@@ -360,24 +434,31 @@
             }
         });
 
-        // Add ripple effect to buttons
+        // Improved ripple effect that doesn't interfere with button functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(button => {
+            // Only add ripple to buttons with the btn-ripple class
+            document.querySelectorAll('.btn-ripple').forEach(button => {
                 button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const x = e.clientX - e.target.getBoundingClientRect().left;
-                    const y = e.clientY - e.target.getBoundingClientRect().top;
+                    // Don't prevent default behavior
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
                     
                     const ripple = document.createElement('span');
-                    ripple.classList.add('ripple');
+                    ripple.classList.add('btn-ripple-effect');
                     ripple.style.left = `${x}px`;
                     ripple.style.top = `${y}px`;
+                    
+                    // Remove any existing ripples
+                    const existingRipples = this.querySelectorAll('.btn-ripple-effect');
+                    existingRipples.forEach(r => r.remove());
+                    
                     this.appendChild(ripple);
                     
+                    // Remove the ripple after animation completes
                     setTimeout(() => {
                         ripple.remove();
-                    }, 1000);
+                    }, 600);
                 });
             });
         });

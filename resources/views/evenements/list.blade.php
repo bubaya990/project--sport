@@ -60,8 +60,12 @@
                         <h3 class="event-title">{{ $evenement->titre }}</h3>
                         <p class="event-desc">{{ Str::limit($evenement->description, 100) }}</p>
                         
-                        @if(Auth::check() && Auth::user()->isAdmin())
-                            <div class="event-actions">
+                        <div class="event-actions">
+                            <a href="{{ route('evenements.show', $evenement->id) }}" class="btn btn-primary btn-small">
+                                <i class="fas fa-eye"></i> Details
+                            </a>
+                            
+                            @if(Auth::check() && Auth::user()->isAdmin())
                                 <a href="{{ route('evenements.edit', $evenement->id) }}" class="btn btn-warning btn-small">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
@@ -72,8 +76,8 @@
                                         <i class="fas fa-trash-alt"></i> Delete
                                     </button>
                                 </form>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
                 @endforeach
@@ -233,6 +237,7 @@
         .event-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .event-actions .btn {
@@ -240,6 +245,9 @@
             align-items: center;
             gap: 6px;
             font-size: 13px;
+            flex: 1;
+            min-width: 100px;
+            justify-content: center;
         }
 
         /* Empty State */
@@ -318,6 +326,10 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .event-actions .btn {
+                min-width: 80px;
+            }
         }
     </style>
 
@@ -325,9 +337,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Enhanced hover effects
             const eventCards = document.querySelectorAll('.event-card');
-          
-
-            
             
             eventCards.forEach(card => {
                 const img = card.querySelector('.event-image');
@@ -347,5 +356,4 @@
             });
         });
     </script>
-
 @endsection

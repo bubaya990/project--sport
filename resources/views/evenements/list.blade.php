@@ -326,6 +326,8 @@
             // Enhanced hover effects
             const eventCards = document.querySelectorAll('.event-card');
           
+
+            
             
             eventCards.forEach(card => {
                 const img = card.querySelector('.event-image');
@@ -345,4 +347,5 @@
             });
         });
     </script>
+
 @endsection

@@ -82,29 +82,29 @@
             color: var(--primary);
             transition: all 0.3s ease;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .nav-logo:hover {
             transform: scale(1.05);
         }
 
-        .nav-logo i {
-            font-size: 22px;
+        .nav-container {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 5px;
+            margin-left: 20px;
         }
 
         .nav-links {
             display: flex;
             gap: 5px;
-            margin: 0 20px;
         }
 
         .nav-link {
             color: var(--text-secondary);
             text-decoration: none;
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 8px;
             transition: all 0.3s ease;
             display: flex;
@@ -131,6 +131,7 @@
         .nav-search {
             flex: 1;
             max-width: 400px;
+            margin-left: 10px;
         }
 
         .search-input {
@@ -351,7 +352,7 @@
             }
             
             .nav-search {
-                margin: 0 10px;
+                margin-left: 0;
             }
         }
 
@@ -362,9 +363,14 @@
                 padding: 15px;
             }
             
+            .nav-container {
+                margin-left: 0;
+                width: 100%;
+            }
+            
             .nav-search {
                 width: 100%;
-                margin: 10px 0;
+                margin: 10px 0 0;
             }
             
             .section-card {
@@ -390,23 +396,25 @@
                 <span>My App</span>
             </a>
 
-            <div class="nav-links">
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{{ route('aboutus.index') }}" class="nav-link {{ request()->routeIs('aboutus.*') ? 'active' : '' }}">
-                    <i class="fas fa-info-circle"></i>
-                    <span>About Us</span>
-                </a>
-                <a href="{{ route('evenements.index') }}" class="nav-link {{ request()->routeIs('evenements.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Our Events</span>
-                </a>
-            </div>
-        
-            <div class="nav-search">
-                <input type="text" class="search-input" placeholder="Search events...">
+            <div class="nav-container">
+                <div class="nav-links">
+                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ route('aboutus.index') }}" class="nav-link {{ request()->routeIs('aboutus.*') ? 'active' : '' }}">
+                        <i class="fas fa-info-circle"></i>
+                        <span>About Us</span>
+                    </a>
+                    <a href="{{ route('evenements.index') }}" class="nav-link {{ request()->routeIs('evenements.*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Our Events</span>
+                    </a>
+                </div>
+                
+                <div class="nav-search">
+                    <input type="text" class="search-input" placeholder="Search events...">
+                </div>
             </div>
             
             <div class="nav-user">

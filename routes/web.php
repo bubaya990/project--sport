@@ -37,5 +37,14 @@ Route::prefix('auth')->group(function () {
     Route::get('/apple', [RegisteredUserController::class, 'redirectToApple'])->name('auth.apple');
     Route::get('/apple/callback', [RegisteredUserController::class, 'handleAppleCallback']);
 });
+//aboutus routes
+Route::get('/about-us', [AboutUsController::class, 'index'])->name('aboutus.index');
+Route::get('/about-us/edit', [AboutUsController::class, 'edit'])->name('aboutus.edit')->middleware('auth');
+Route::put('/about-us/update', [AboutUsController::class, 'update'])->name('aboutus.update')->middleware('auth');Route::prefix('aboutus')->group(function() {
+    Route::get('/', [AboutUsController::class, 'index'])->name('aboutus.index');
+    Route::get('/edit', [AboutUsController::class, 'edit'])->name('aboutus.edit');
+    Route::put('/', [AboutUsController::class, 'update'])->name('aboutus.update');
+});
+
 
 require __DIR__.'/auth.php';

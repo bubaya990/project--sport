@@ -12,28 +12,10 @@
     
     <div class="sidebar-nav">
         <div class="nav-section">
-            <div class="nav-section-title">Main</div>
-            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
-             <a href="{{ route('aboutus.index') }}">About us</a>
-
-            
-            <a href="{{ route('evenements.index') }}" class="{{ request()->routeIs('evenements.*') ? 'active' : '' }}">Our events</a>
+            <div class="nav-section-title">Navigation</div>
+            <a href="{{ route('evenements.index') }}" class="{{ request()->routeIs('evenements.*') ? 'active' : '' }}">Our Events</a>
+            <a href="{{ route('aboutus.index') }}" class="{{ request()->routeIs('aboutus.*') ? 'active' : '' }}">About Us</a>
         </div>
-        
-        <div class="nav-section">
-            <div class="nav-section-title">Other</div>
-            <a href="{{ route('profile.edit') }}">Profile</a>
-            <a href="#">Settings</a>
-        </div>
-    </div>
-    
-    <div class="sidebar-footer">
-        <form id="logoutForm" action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="logout-btn">
-                Logout
-            </button>
-        </form>
     </div>
 </aside>
 

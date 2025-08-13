@@ -55,7 +55,8 @@
                     {!! nl2br(e($evenement->description)) !!}
                 </div>
 
-                @if(Auth::check() && Auth::user()->isAdmin())
+                {{-- Admin actions are now public --}}
+                @if(true)
                 <div class="event-actions">
                     <a href="{{ route('evenements.edit', $evenement->id) }}" 
                        class="btn btn-warning">

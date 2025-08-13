@@ -417,11 +417,7 @@
                 </div>
             </div>
             
-            <div class="nav-user">
-                <a href="{{ route('profile.edit') }}" class="user-avatar">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </a>
-            </div>
+            <!-- Navigation is public, no user section needed -->
         </nav>
 
         <!-- Content -->

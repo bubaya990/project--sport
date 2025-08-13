@@ -8,7 +8,8 @@
         <div class="section-header">
             <div class="section-icon">🎯</div>
             <h2 class="section-title">Manage Events</h2>
-            @if(Auth::check() && Auth::user()->isAdmin())
+            {{-- Admin actions are now public --}}
+            @if(true)
                 <a href="{{ route('evenements.create') }}" class="btn btn-success">
                     <i class="fas fa-plus"></i> Add New Event
                 </a>
@@ -20,7 +21,8 @@
                 <div class="empty-icon">📅</div>
                 <h3>No Events Found</h3>
                 <p>Get started by creating your first event</p>
-                @if(Auth::check() && Auth::user()->isAdmin())
+                {{-- Admin actions are now public --}}
+                @if(true)
                     <a href="{{ route('evenements.create') }}" class="btn btn-primary">
                         <i class="fas fa-calendar-plus"></i> Create Event
                     </a>
@@ -65,7 +67,8 @@
                                 <i class="fas fa-eye"></i> Details
                             </a>
                             
-                            @if(Auth::check() && Auth::user()->isAdmin())
+                            {{-- Admin actions are now public --}}
+                            @if(true)
                                 <a href="{{ route('evenements.edit', $evenement->id) }}" class="btn btn-warning btn-small">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>

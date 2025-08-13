@@ -23,9 +23,6 @@ class EvenementController extends Controller
      */
     public function create()
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
-        }
         return view('evenements.add');
     }
 
@@ -34,10 +31,6 @@ class EvenementController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'description' => 'required|string',
@@ -81,9 +74,6 @@ class EvenementController extends Controller
      */
     public function edit(Evenement $evenement)
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
-        }
         return view('evenements.edit', compact('evenement'));
     }
 
@@ -92,10 +82,6 @@ class EvenementController extends Controller
      */
     public function update(Request $request, Evenement $evenement)
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'description' => 'required|string',
@@ -148,10 +134,6 @@ class EvenementController extends Controller
      */
     public function destroy(Evenement $evenement)
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
-        }
-
         if ($evenement->images) {
             foreach ($evenement->images as $image) {
                 Storage::disk('public')->delete($image);

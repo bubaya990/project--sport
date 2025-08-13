@@ -16,6 +16,17 @@
             <a href="{{ route('evenements.index') }}" class="{{ request()->routeIs('evenements.*') ? 'active' : '' }}">Our Events</a>
             <a href="{{ route('aboutus.index') }}" class="{{ request()->routeIs('aboutus.*') ? 'active' : '' }}">About Us</a>
         </div>
+        @if(auth()->check())
+        <div class="nav-section">
+            <div class="nav-section-title">Admin</div>
+            <form method="POST" action="{{ route('admin.logout') }}" class="w-full">
+                @csrf
+                <button type="submit" class="logout-btn w-full text-left">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </button>
+            </form>
+        </div>
+        @endif
     </div>
 </aside>
 

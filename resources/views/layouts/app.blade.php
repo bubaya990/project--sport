@@ -397,27 +397,36 @@
             </a>
 
             <div class="nav-container">
-                <div class="nav-links">
-                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <i class="fas fa-home"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="{{ route('aboutus.index') }}" class="nav-link {{ request()->routeIs('aboutus.*') ? 'active' : '' }}">
-                        <i class="fas fa-info-circle"></i>
-                        <span>About Us</span>
-                    </a>
-                    <a href="{{ route('evenements.index') }}" class="nav-link {{ request()->routeIs('evenements.*') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Our Events</span>
-                    </a>
+                <!-- Navigation Links -->
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('evenements.index')" :active="request()->routeIs('evenements.*')">
+                        {{ __('Events') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('aboutus.index')" :active="request()->routeIs('aboutus.*')">
+                        {{ __('About Us') }}
+                    </x-nav-link>
                 </div>
-                
+
                 <div class="nav-search">
                     <input type="text" class="search-input" placeholder="Search events...">
                 </div>
             </div>
-            
-            <!-- Navigation is public, no user section needed -->
+
+            <div class="nav-user">
+                @if(auth()->check())
+                    <span class="text-white mr-4">Welcome, Admin</span>
+                    <form method="POST" action="{{ route('admin.logout') }}" style="margin-left: 15px;">
+                        @csrf
+                        <button type="submit" class="btn btn-danger btn-small">
+                            Logout
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('admin.login') }}" class="btn btn-primary btn-small">
+                        Admin Login
+                    </a>
+                @endif
+            </div>
         </nav>
 
         <!-- Content -->

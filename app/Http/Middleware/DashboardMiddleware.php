@@ -5,25 +5,18 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class DashboardMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        // Check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('admin.login');
         }
 
-        // Check if user is admin
-        if (Auth::user()->role !== 'admin') {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'admin') {
             Auth::logout();
             return redirect()->route('admin.login')->with('error', 'Admin access required.');
         }

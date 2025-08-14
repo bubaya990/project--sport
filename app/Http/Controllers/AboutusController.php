@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 
 class AboutUsController extends Controller
 {
+
+
     public function index()
     {
         $aboutUs = AboutUs::firstOrNew();

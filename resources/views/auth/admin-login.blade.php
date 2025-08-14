@@ -116,8 +116,8 @@
             @csrf
             
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required autocomplete="username">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required autocomplete="email" value="admin@example.com">
             </div>
 
             <div class="form-group">

@@ -67,6 +67,27 @@
         </div>
     </div>
 
+    <!-- Action Buttons Section -->
+    <div class="section-card action-buttons">
+        <div class="section-header">
+            <div class="section-icon">🎯</div>
+            <h2 class="section-title">Quick Actions</h2>
+        </div>
+        <div class="action-buttons-container">
+            @if(auth()->user()->is_admin)
+                <a href="{{ route('users.guests') }}" class="action-button admin">
+                    <span class="button-icon">👥</span>
+                    <span class="button-text">List of Guests</span>
+                </a>
+            @else
+                <a href="{{ route('register') }}" class="action-button guest">
+                    <span class="button-icon">✨</span>
+                    <span class="button-text">Register Now</span>
+                </a>
+            @endif
+        </div>
+    </div>
+
     <!-- Past Experiences Section -->
     <div class="section-card">
         <div class="section-header">
@@ -334,6 +355,54 @@
         gap: 8px;
     }
     
+    /* Action Buttons Section */
+    .action-buttons {
+        margin-bottom: 30px;
+    }
+
+    .action-buttons-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px 30px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .action-button.admin {
+        background: var(--primary);
+        color: white;
+    }
+
+    .action-button.guest {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+    }
+
+    .action-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .button-icon {
+        font-size: 20px;
+    }
+
+    .button-text {
+        font-size: 16px;
+    }
+
     /* Past Events Grid */
     .past-events-grid {
         display: grid;

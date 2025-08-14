@@ -9,8 +9,12 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -23,10 +27,26 @@ class User extends Authenticatable
     ];
 
     protected $hidden = ['password', 'remember_token'];
-public function isAdmin()
-{
-    return $this->role === 'admin';
-}
+
+    /**
+     * Check if the user is an admin
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if the user is a guest
+     *
+     * @return bool
+     */
+    public function isGuest()
+    {
+        return !$this->isAdmin();
+    }
     
 
     public function paiement()

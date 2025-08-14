@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 class EvenementController extends Controller
 {
+
+
     /**
      * Display a listing of the resource.
      */

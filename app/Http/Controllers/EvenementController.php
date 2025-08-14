@@ -9,7 +9,19 @@ use Illuminate\Support\Facades\Auth;
 
 class EvenementController extends Controller
 {
-
+    public function __construct()
+    {
+        // Les méthodes qui nécessitent une authentification admin
+        $this->middleware('auth')->only(['add', 'store', 'edit', 'update', 'destroy']);
+        
+        // Vérification supplémentaire du rôle admin
+        $this->middleware(function ($request, $next) {
+            if (!Auth::check() || Auth::user()->role !== 'admin') {
+                return redirect()->route('admin.login')->with('error', 'Access denied. Admin only.');
+            }
+            return $next($request);
+        })->only(['add', 'store', 'edit', 'update', 'destroy']);
+    }
 
     /**
      * Display a listing of the resource.
@@ -17,13 +29,13 @@ class EvenementController extends Controller
     public function index()
     {
         $evenements = Evenement::orderBy('date', 'desc')->paginate(10);
-        return view('evenements.list', compact('evenements'));
+        return view('evenements.show', compact('evenements'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for adding a new resource.
      */
-    public function create()
+    public function add()
     {
         return view('evenements.add');
     }
@@ -40,13 +52,14 @@ class EvenementController extends Controller
             'end_date' => 'nullable|date|after_or_equal:date',
             'status' => 'required|in:scheduled,ongoing,completed',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120'
         ]);
 
         $images = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('evenements', 'public');
+                $fileName = time() . '_' . $image->getClientOriginalName();
+                $path = $image->storeAs('evenements', $fileName, 'public');
                 $images[] = $path;
             }
         }
@@ -91,7 +104,7 @@ class EvenementController extends Controller
             'end_date' => 'nullable|date|after_or_equal:date',
             'status' => 'required|in:scheduled,ongoing,completed',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
             'removed_images' => 'nullable|array',
             'existing_images' => 'nullable'
         ]);

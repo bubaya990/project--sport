@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AboutUs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AboutUsController extends Controller
 {
@@ -22,6 +23,8 @@ class AboutUsController extends Controller
 
     public function update(Request $request)
     {
+        Log::info('Updating AboutUs', ['request' => $request->all()]);
+        
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -40,6 +43,8 @@ class AboutUsController extends Controller
             'twitter_url' => 'nullable|url|max:255',
             'linkedin_url' => 'nullable|url|max:255',
         ]);
+        
+        Log::info('Validation passed', ['validated' => $validated]);
 
         $aboutUs = AboutUs::firstOrNew();
         
@@ -97,13 +102,23 @@ class AboutUsController extends Controller
         }
 
         // Update or create record
-        if ($aboutUs->exists) {
-            $aboutUs->update($validated);
-        } else {
-            $aboutUs = AboutUs::create($validated);
-        }
+        try {
+            if ($aboutUs->exists) {
+                $updated = $aboutUs->update($validated);
+                Log::info('AboutUs updated', ['success' => $updated, 'data' => $validated]);
+            } else {
+                $aboutUs = AboutUs::create($validated);
+                Log::info('AboutUs created', ['id' => $aboutUs->id]);
+            }
 
-        return redirect()->route('aboutus.index')
-            ->with('success', 'About Us information updated successfully!');
+            return redirect()->route('aboutus.index')
+                ->with('success', 'About Us information updated successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error updating AboutUs', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withInput()->withErrors(['error' => 'An error occurred while saving the data.']);
+        }
     }
 }

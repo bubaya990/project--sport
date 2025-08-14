@@ -12,6 +12,7 @@
                 <div class="card-body">
                     <form action="{{ route('aboutus.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @method('PUT')
 
                         <div class="row mb-4">
                             <div class="col-md-6">

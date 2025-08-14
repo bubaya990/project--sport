@@ -65,7 +65,7 @@
                 <div class="image-preview">
                     @foreach($evenement->images as $image)
                         <div class="image-container">
-                            <img src="{{ asset('storage/'.$image) }}">
+                            <img src="{{ asset('storage/'.$image) }}" alt="{{ $evenement->titre }}" onerror="this.onerror=null; this.src='{{ asset('images/placeholder.png') }}';">
                             <button type="button" class="btn btn-danger btn-small remove-image" onclick="removeImage(this, '{{ $image }}')">×</button>
                         </div>
                     @endforeach

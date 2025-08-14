@@ -1,186 +1,214 @@
 @extends('layouts.app')
 
-@section('title', $evenement->titre)
+@section('title', 'Events')
 
 @section('content')
     <div class="section-card">
         <div class="section-header">
             <div class="section-icon">
-                <i class="fas fa-images"></i>
+                <i class="fas fa-calendar-alt"></i>
             </div>
-            <h2 class="section-title">Event Gallery</h2>
-            <a href="{{ route('evenements.index') }}" class="btn btn-outline">
-                <i class="fas fa-arrow-left me-1"></i> Back to Events
-            </a>
+            <h2 class="section-title">Our Events</h2>
+            @if(auth()->check() && auth()->user()->role === 'admin')
+                <a href="{{ route('evenements.add') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Add New Event
+                </a>
+            @endif
         </div>
 
-        <div class="event-gallery-container">
-            <!-- Image Grid Gallery -->
-            @if($evenement->images && count($evenement->images) > 0)
-                <div class="image-grid">
-                    @foreach($evenement->images as $key => $image)
-                        <div class="grid-item">
-                            <img src="{{ asset('storage/'.$image) }}" 
-                                 alt="Event image {{ $key + 1 }}"
+        <div class="events-grid">
+            @forelse($evenements as $evenement)
+                <div class="event-card">
+                    @if($evenement->images && count($evenement->images) > 0)
+                        <div class="event-image">
+                            <img src="{{ asset('storage/'.$evenement->images[0]) }}" 
+                                 alt="{{ $evenement->titre }}"
                                  class="grid-image">
+                            <div class="event-date">
+                                <span class="date-day">{{ $evenement->date->format('d') }}</span>
+                                <span class="date-month">{{ $evenement->date->format('M') }}</span>
+                            </div>
                         </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="no-images">
-                    <i class="fas fa-image fa-4x"></i>
-                    <p>No images available for this event</p>
-                </div>
-            @endif
+                    @endif
 
-            <!-- Event Details -->
-            <div class="event-details">
-                <div class="event-meta">
-                    <span class="event-date">
-                        <i class="far fa-calendar-alt"></i>
-                        {{ $evenement->date->format('M d, Y') }}
-                        @if($evenement->end_date)
-                            <span class="date-separator">-</span>
-                            {{ $evenement->end_date->format('M d, Y') }}
-                        @endif
-                    </span>
-                    <span class="event-status status-{{ $evenement->status }}">
-                        {{ ucfirst($evenement->status) }}
-                    </span>
-                </div>
+                    <div class="event-content">
+                        <div class="event-status {{ $evenement->status }}">
+                            {{ ucfirst($evenement->status) }}
+                        </div>
+                        
+                        <h3 class="event-title">{{ $evenement->titre }}</h3>
+                        <p class="event-description">{{ Str::limit($evenement->description, 100) }}</p>
+                        
+                        <div class="event-details">
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ $evenement->date->format('H:i') }}</span>
+                            </div>
+                            @if($evenement->end_date)
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>{{ $evenement->end_date->format('M d, Y') }}</span>
+                                </div>
+                            @endif
+                        </div>
 
-                <h1 class="event-title">{{ $evenement->titre }}</h1>
+                        <div class="event-actions">
+                            <a href="{{ route('evenements.show', $evenement->id) }}" class="btn btn-outline">
+                                <i class="fas fa-eye me-1"></i> View Details
+                            </a>
 
-                <div class="event-description">
-                    {!! nl2br(e($evenement->description)) !!}
+                            @if(auth()->check() && auth()->user()->role === 'admin')
+                                <div class="admin-actions">
+                                    <a href="{{ route('evenements.edit', $evenement->id) }}" 
+                                       class="btn btn-warning btn-small">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('evenements.destroy', $evenement->id) }}" 
+                                          method="POST" 
+                                          class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this event?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-small">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-
-                {{-- Admin actions are now public --}}
-                @if(true)
-                <div class="event-actions">
-                    <a href="{{ route('evenements.edit', $evenement->id) }}" 
-                       class="btn btn-warning">
-                        <i class="fas fa-edit me-1"></i> Edit
-                    </a>
-                    <form action="{{ route('evenements.destroy', $evenement->id) }}" 
-                          method="POST" 
-                          onsubmit="return confirm('Are you sure you want to delete this event?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash-alt me-1"></i> Delete
-                        </button>
-                    </form>
+            @empty
+                <div class="no-events">
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times fa-4x"></i>
+                        <h3>No Events Found</h3>
+                        <p>Check back later for upcoming events</p>
+                    </div>
                 </div>
-                @endif
-            </div>
+            @endforelse
         </div>
     </div>
 
     <style>
-        .event-gallery-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .image-grid {
+        .events-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-            width: 100%;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        .grid-item {
-            position: relative;
-            border-radius: 8px;
+        .event-card {
+            background: var(--secondary);
+            border-radius: 12px;
             overflow: hidden;
-            aspect-ratio: 4/3;
-            transition: transform 0.3s ease;
-            background: var(--secondary-light);
+            transition: all 0.3s ease;
+            border: 1px solid var(--card-border);
         }
 
-        .grid-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0, 200, 215, 0.2);
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .grid-image {
+        .event-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .event-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.3s ease;
         }
 
-        .grid-item:hover .grid-image {
-            transform: scale(1.05);
-        }
-
-        .no-images {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            background: var(--secondary-light);
-            border-radius: 8px;
-            color: var(--text-secondary);
-        }
-
-        .no-images i {
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .event-details {
-            padding: 20px 0;
-        }
-
-        .event-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
+        .event-card:hover .event-image img {
+            transform: scale(1.1);
         }
 
         .event-date {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+        }
+
+        .date-day {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .date-month {
+            display: block;
             font-size: 14px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            text-transform: uppercase;
         }
 
-        .event-date i {
-            font-size: 16px;
-        }
-
-        .date-separator {
-            margin: 0 5px;
+        .event-content {
+            padding: 20px;
         }
 
         .event-status {
-            font-size: 13px;
-            padding: 5px 12px;
+            display: inline-block;
+            padding: 4px 12px;
             border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
+            margin-bottom: 10px;
         }
 
-        .status-scheduled {
+        .event-details {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .detail-item i {
+            color: var(--primary);
+        }
+
+        .event-status.scheduled {
             background: rgba(0, 200, 215, 0.2);
             color: var(--primary);
         }
 
-        .status-ongoing {
+        .event-status.ongoing {
             background: rgba(245, 158, 11, 0.2);
             color: var(--warning);
         }
 
-        .status-completed {
+        .event-status.completed {
             background: rgba(16, 185, 129, 0.2);
             color: var(--success);
+        }
+
+        .event-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .event-title {

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add Event')
+@section('title', 'Add New Event')
 
 @section('content')
     <!-- Add Event Form -->
@@ -8,6 +8,9 @@
         <div class="section-header">
             <div class="section-icon">➕</div>
             <h2 class="section-title">Add New Event</h2>
+            <a href="{{ route('evenements.index') }}" class="btn btn-outline">
+                <i class="fas fa-arrow-left me-1"></i> Back to Events
+            </a>
         </div>
 
         <form action="{{ route('evenements.store') }}" method="POST" enctype="multipart/form-data">
@@ -50,8 +53,8 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Create Event</button>
-                <a href="{{ route('evenements.index') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add Event</button>
+                <a href="{{ route('evenements.index') }}" class="btn btn-outline">Cancel</a>
             </div>
         </form>
     </div>

@@ -1,7 +1,7 @@
 
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AboutusController;
+use App\Http\Controllers\AboutUsController;
 use App\Http\Controllers\EvenementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -73,14 +73,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 // Protected Admin Routes
 Route::middleware(['auth'])->group(function () {
-    Route::group(['middleware' => function ($request, $next) {
+    Route::group(['middleware' => 'auth', 'admin' => function ($request, $next) {
         if (!Auth::check() || Auth::user()->role !== 'admin') {
             return redirect()->route('admin.login');
         }
         return $next($request);
     }], function () {
         // Events Management
-        Route::get('/evenements/create', [EvenementController::class, 'create'])->name('evenements.create');
+        Route::get('/evenements/add', [EvenementController::class, 'add'])->name('evenements.add');
         Route::post('/evenements', [EvenementController::class, 'store'])->name('evenements.store');
         Route::get('/evenements/{evenement}/edit', [EvenementController::class, 'edit'])->name('evenements.edit');
         Route::put('/evenements/{evenement}', [EvenementController::class, 'update'])->name('evenements.update');

@@ -88,7 +88,7 @@ Route::middleware(['auth'])->group(function () {
 
         // About Us Management
         Route::get('/about-us/edit', [AboutUsController::class, 'edit'])->name('aboutus.edit');
-        Route::put('/about-us/update', [AboutUsController::class, 'update'])->name('aboutus.update');
+        Route::put('/about-us', [AboutUsController::class, 'update'])->name('aboutus.update');
 
         // Guest List Management
         Route::get('/users/guests', [DashboardController::class, 'guests'])->name('users.guests');

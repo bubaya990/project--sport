@@ -4,6 +4,14 @@
 <div class="container py-5">
     <div class="row">
         <div class="col-lg-8 mx-auto">
+            @if(auth()->check() && auth()->user()->role === 'admin')
+            <div class="text-end mb-4">
+                <a href="{{ route('aboutus.edit') }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit About Us
+                </a>
+            </div>
+            @endif
+            
             <!-- Company Info Card -->
             <div class="card shadow-lg mb-5">
                 @if($aboutUs->main_image)

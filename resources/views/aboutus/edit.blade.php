@@ -4,9 +4,10 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="text-center font-weight-light my-4">Edit About Us</h3>
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">✏️</div>
+                    <h2 class="section-title">Edit About Us</h2>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('aboutus.update') }}" method="POST" enctype="multipart/form-data">
